@@ -1,4 +1,4 @@
-&fras "./test.txt"
+&fras "./input1.txt"
 ⊜□¬∊,"\n"
 p ← (
   ⊔
