@@ -80,7 +80,7 @@ int getLast(const char *line) {
     return last;
 }
 
-int main() {
+int day1() {
     FILE *input;
     input = fopen("test.txt", "r");
     char line[100];
