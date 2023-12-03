@@ -48,7 +48,7 @@ game_t toGame(const char *line) {
     return game;
 }
 
-int part1() {
+int day2part1() {
 
     FILE *input;
     input = fopen("input2.txt", "r");
@@ -62,7 +62,7 @@ int part1() {
     printf("%d", sum);
     return 0;
 }
-int main(){
+int day2part2(){
     FILE *input;
     input = fopen("input2.txt", "r");
     char line[200];
