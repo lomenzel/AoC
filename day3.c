@@ -10,7 +10,7 @@ typedef struct gear {
 
 gear_t gears[150][150];
 
-int getPartNumbers(char *line, char *previous, char *next, int hasPrevious, int hasNext) {
+int getPartNumbers(const char *line, const char *previous, const char *next, int hasPrevious, int hasNext) {
     int sum = 0;
     int i = 0;
     int numb = 0;
