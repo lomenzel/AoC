@@ -36,8 +36,8 @@ function part1(sequences) {
     return sequences.map(e => nextValue(e)).reduce((a, b) => a + b, 0)
 }
 
-function part2(sequennces) {
-    return sequennces.map(e => previousValue(e)).reduce((a, b) => a + b, 0)
+function part2(sequences) {
+    return sequences.map(e => previousValue(e)).reduce((a, b) => a + b, 0)
 }
 
 console.log("Part 1:", part1(input))

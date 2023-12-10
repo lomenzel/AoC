@@ -4,7 +4,7 @@ maps.shift()
 
 maps = maps.map(map => {
     map = map.split(/\n/)
-        .filter(r => r != "").map(r => {
+        .filter(r => r !== "").map(r => {
             r = r.split(/ /).map(n => n - 0)
             return r
         })
@@ -80,7 +80,7 @@ function cut(range, e) {
 }
 
 function split(range, e) {
-    if (range[1] == 0) throw ["range of length 0", range, e]
+    if (range[1] === 0) throw ["range of length 0", range, e]
     cr = [range[0], range[0] + range[1] - 1]
     ce = [e[1], e[1] + e[2] - 1]
 
