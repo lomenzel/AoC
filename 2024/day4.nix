@@ -125,5 +125,5 @@ with builtins; let
     |> filter (isXMAS (map (lib.stringToCharacters) input))
     |> length
     ;
-in
+indeltas2
 { inherit "Part 1" "Part 2"; }

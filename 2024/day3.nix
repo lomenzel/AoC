@@ -18,13 +18,6 @@ with builtins; let
     |> sum
     ;
 
-  # "Part 2" = input
-  #   |> split ''don't\(\)    do\(\)''
-  #   |> filter (e: isString e )
-  #   ;
-  
-
-
   "Part 2" = input
     |> split ''(mul\(([0-9]+),([0-9]+)\))|(do\(\))|(don't\(\))''
     |> filter (e: !isString e)
@@ -43,8 +36,3 @@ with builtins; let
     ;
 in 
   {inherit "Part 1" "Part 2";}
-
-
-# "Part 2" = input
-#     |> split ''(mul\(([0-9]+),([0-9]+)\))|(do\(\))|(don't\(\))''
-#     |> filter (e: !isString e |> )
