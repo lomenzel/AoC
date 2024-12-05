@@ -42,10 +42,10 @@ with builtins; let
   flat = list: lib.fold (curr: acc: acc ++ curr) [] list;
 
   
-  addEverywhere = item: allready: allready
+  addEverywhere = item: list: list
     |> length
     |> lib.range 0
-    |> map (addToPosition item allready)
+    |> map (addToPosition item list)
     |> filter printable
     ;
 
@@ -54,7 +54,8 @@ with builtins; let
 
   ordered = list: list
     |> lib.foldl (acc: curr: map (addEverywhere curr) acc |> flat) [[]]
-    |> head;
+    |> head
+    ;
 
   "Part 1" = input.updates
     |> filter printable
