@@ -56,97 +56,26 @@ with builtins; let
           ) directionDeltas
 ;
 
+  expand = n: l: lib.lists.unique (expandAll n l);
+
+  expandAll =  n: l: map (e: nachbarn e  |> filter (inside)) l
+          |> map (filter (e: atCoord e == n))
+          |> flat
+          ;
+
   part1 = allCoords
     |> filter (e: atCoord e == 0)
-    |> map (e:
-      e // {
-        erreichbar = nachbarn e
-          |> filter (inside)
-          |> filter (e: atCoord e == 1)
-          |> map (e: nachbarn e  |> filter (inside))
-          |> map (filter (e: atCoord e == 2))
-          |> flat
-          |> lib.lists.unique
-          |> map (e: nachbarn e |> filter (inside))
-          |> map (filter (e: atCoord e == 3))
-          |> flat
-          |> lib.lists.unique
-          |> map (e: nachbarn e |> filter (inside))
-          |> map (filter (e: atCoord e == 4))
-          |> flat
-          |> lib.lists.unique
-          |> map (e: nachbarn e |> filter (inside))
-          |> map (filter (e: atCoord e == 5))
-          |> flat
-          |> lib.lists.unique
-          |> map (e: nachbarn e |> filter (inside))
-          |> map (filter (e: atCoord e == 6))
-          |> flat
-          |> lib.lists.unique
-          |> map (e: nachbarn e |> filter (inside))
-          |> map (filter (e: atCoord e == 7))
-          |> flat
-          |> lib.lists.unique
-          |> map (e: nachbarn e |> filter (inside))
-          |> map (filter (e: atCoord e == 8))
-          |> flat
-          |> lib.lists.unique
-          |> map (e: nachbarn e |> filter (inside))
-          |> map (filter (e: atCoord e == 9))
-          |> flat
-          |> lib.lists.unique
-          ;
-      }
-    )
-    |> map (e: length e.erreichbar)
+    |> map (e: foldl' (acc: curr: expand curr acc) [e] (lib.range 1 9))
+    |> map length
     |> sum
     ;
 
   part2 = allCoords
     |> filter (e: atCoord e == 0)
-    |> map (e:
-      e // {
-        erreichbar = nachbarn e
-          |> filter (inside)
-          |> filter (e: atCoord e == 1)
-          |> map (e: nachbarn e  |> filter (inside))
-          |> map (filter (e: atCoord e == 2))
-          |> flat
-          #|> lib.lists.unique
-          |> map (e: nachbarn e |> filter (inside))
-          |> map (filter (e: atCoord e == 3))
-          |> flat
-          #|> lib.lists.unique
-          |> map (e: nachbarn e |> filter (inside))
-          |> map (filter (e: atCoord e == 4))
-          |> flat
-          #|> lib.lists.unique
-          |> map (e: nachbarn e |> filter (inside))
-          |> map (filter (e: atCoord e == 5))
-          |> flat
-          #|> lib.lists.unique
-          |> map (e: nachbarn e |> filter (inside))
-          |> map (filter (e: atCoord e == 6))
-          |> flat
-          #|> lib.lists.unique
-          |> map (e: nachbarn e |> filter (inside))
-          |> map (filter (e: atCoord e == 7))
-          |> flat
-          #|> lib.lists.unique
-          |> map (e: nachbarn e |> filter (inside))
-          |> map (filter (e: atCoord e == 8))
-          |> flat
-          #|> lib.lists.unique
-          |> map (e: nachbarn e |> filter (inside))
-          |> map (filter (e: atCoord e == 9))
-          |> flat
-          #|> lib.lists.unique
-          ;
-      }
-    )
-    |> map (e: length e.erreichbar)
+    |> map (e: foldl' (acc: curr: expandAll curr acc) [e] (lib.range 1 9))
+    |> map length
     |> sum
-  ;
+    ;
 
 in
 part2
