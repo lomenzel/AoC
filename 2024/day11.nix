@@ -46,14 +46,12 @@ with builtins; let
     blink 25 input
     |> map (e: e.count)
     |> sum
-
+    ;
   part2 = 
     blink 75 input
     |> map (e: e.count)
     |> sum
+    ;
 
 
-in 
-blink 75 input
-|> map (e: e.count)
-|> sum
+in part2
