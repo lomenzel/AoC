@@ -7,9 +7,9 @@ with builtins; let
   minimum = list:
     if list == [] then null else
     foldl' (acc: curr: lib.min acc curr) (head list) list;
-  maximum =
+  maximum = list:
     if list == [] then null else
-    list: foldl' (acc: curr: lib.max acc curr) (head list) list;
+    foldl' (acc: curr: lib.max acc curr) (head list) list;
   join = separator: list: list
     |> map (e: e + separator)
     |> concat;
@@ -58,42 +58,7 @@ with builtins; let
 
 */
 
-  # mashine = Mashine -> [number...]
-  btnPressRange = mashine:
-    let
-      maxx = lib.max mashine.A.x mashine.B.x;
-      maxy = lib.max mashine.A.y mashine.B.y;
-      minx = lib.min mashine.A.x mashine.B.x;
-      miny = lib.min mashine.A.y mashine.B.y;
-      px = mashine.Prize.x;
-      py = mashine.Prize.y;
-      minPressY = div py maxy;
-      minPressX = div px maxx;
-      maxPressY = div py miny;
-      maxPressX = div px minx;
-      max = lib.min maxPressX maxPressY;
-      min = lib.max minPressX minPressY;
-    in
-      lib.range min max;
 
-  # mashine = Mashine -> number | null
-  cheapestWin = mashine: btnPressRange mashine
-    |> map (n:
-      lib.findFirst (a:
-        winCost mashine a (n - a) != null
-      ) null (lib.range 0 n)
-      |> (sola: if sola == null then null else [sola (n - sola)])
-    )
-    |> filter (e: e != null)
-    |> map (sol:
-      let
-        a = head sol;
-        b = elemAt sol 1;
-      in 
-        winCost mashine a b
-    )
-    |> minimum
-    ;
     
   # mashine = Mashine; a = number; b = number -> number | null
   winCost = mashine: a: b:
@@ -134,6 +99,7 @@ with builtins; let
     |> filter (e: e != null)
     |> sum;
 
+  # mashines = [Mashine...] -> [Mashine...]
   convertInputToPart2 = mashines:
     map (mashine:
       mashine // {Prize = addPos mashine.Prize {
@@ -147,5 +113,27 @@ with builtins; let
     |> part1;
 
 
-in 
-input |> convertInputToPart2 |> head |> btnPressRange
+  # mashine = Mashine -> [number number]
+  cheapestWin = mashine:
+  let 
+    x1 = mashine.A.x;
+    x2 = mashine.B.x;
+    x3 = mashine.Prize.x;
+    y1 = mashine.A.y;
+    y2 = mashine.B.y;
+    y3 = mashine.Prize.y;
+    mul = l: n: if l == [] then [] else [((head l) * n)] ++ mul (tail l) n;
+    substract = l1: l2: if l1 == [] then [] else [((head l1) - (head l2))] ++ (substract (tail l1) (tail l2));
+    I = [x1 x2 x3];
+    II = [y1 y2 y3];
+    I' = mul I (head II);
+    II' = mul II (head I);
+    II'' = substract I' II';
+    b =  (elemAt II'' 2) / (elemAt II'' 1);
+    a = ((elemAt I 2) - (b * (elemAt I 1))) / (elemAt I 0);
+  in
+    winCost mashine a b
+    ;
+
+in part2 input
+
