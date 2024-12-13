@@ -2,7 +2,7 @@ with builtins; let
   readme = ''
   # Advent Of Code
 
-  Hier gibt es meine lösungen zu Advent of Code :)
+  Hier gibt es meine Lösungen zu Advent of Code :)
   
   ${testreport}
   '';
@@ -23,7 +23,7 @@ with builtins; let
           |> (import ./lib.nix).concat; }
     )
     |> map (e: 
-    "## Jahr ${toString e.year}\n\n"
+    "## Jahr ${toString e.year}\n\n| Tag | Teil 1 | Teil 2| \n|-|-|-| \n"
       + e.days + "\n"
     )
     |> (import ./lib.nix).concat
@@ -38,13 +38,13 @@ with builtins; let
        hasAttr "part2" dayfile.tests &&
        hasAttr "part1" dayfile
     then
-      "Day ${toString day}\t${
+      "|${toString day}|${
         execTests dayfile.tests.part1 dayfile.part1
-      }${
+      }|${
         execTests dayfile.tests.part2 dayfile.part2
-      }\n"
+      }|\n"
     else
-      "Day ${toString day}\t🔜🔜\n"
+      "|${toString day}|🔜|🔜|\n"
   
   ;
 
