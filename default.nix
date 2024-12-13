@@ -1,6 +1,15 @@
 with builtins; let
+  readme = ''
+  # Advent Of Code
+
+  Hier gibt es meine lösungen zu Advent of Code :)
+  
+  ${testreport}
+  '';
+
+
   lib = (import <nixos> {}).lib;
-  years = lib.range 2015 2100
+  testreport = lib.range 2015 2100
     |> filter (year: pathExists "${toString ./.}/${toString year}")
     |> map (year:{
       days = lib.range 1 25
@@ -9,7 +18,46 @@ with builtins; let
     }
     )
     |> filter (year: year.days != [])
+    |> map (y:
+      y // {days = map (reportForDay y.year) y.days
+          |> (import ./lib.nix).concat; }
+    )
+    |> map (e: 
+    "## Jahr ${toString e.year}\n\n"
+      + e.days + "\n"
+    )
+    |> (import ./lib.nix).concat
     ;
 
+  reportForDay = year: day: 
+  let
+    dayfile = (import "${toString ./.}/${toString year}/day${toString day}.nix");
+  in
+    if hasAttr "tests" dayfile &&
+       hasAttr "part1" dayfile.tests &&
+       hasAttr "part2" dayfile.tests &&
+       hasAttr "part1" dayfile
+    then
+      "Day ${toString day}\t${
+        execTests dayfile.tests.part1 dayfile.part1
+      }${
+        execTests dayfile.tests.part2 dayfile.part2
+      }\n"
+    else
+      "Day ${toString day}\t🔜🔜\n"
+  
+  ;
+
+  execTests = tests: f: tests
+    |> map (test:
+       (tryEval (f test.input)).success && f test.input == test.expected
+    )
+    |> filter (e: e)
+    |> (e: if length e == length tests then "✅" else "🟥" )
+
+  ;
+
+  pkgs = import <nixpkgs> {};
+
 in
-years
+pkgs.writeText "README.md" readme

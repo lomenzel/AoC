@@ -54,4 +54,4 @@ with builtins; let
     ;
 
 
-in part2
+in { inherit part1 part2; }

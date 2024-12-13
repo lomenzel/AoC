@@ -215,4 +215,4 @@ with builtins; let
 
 
 in
-part2
+{ inherit part1 part2; }

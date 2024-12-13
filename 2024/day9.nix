@@ -202,6 +202,5 @@ part2 =
 
 ;
 in
-part2
-#placefold blockgroups
+{ inherit part1 part2; }
   
