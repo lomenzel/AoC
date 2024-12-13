@@ -1,7 +1,8 @@
 with builtins; with (import ../lib.nix); let
 
   # [Mashine...]
-  input = readFile ./day13.input
+  realinput = readFile ./day13.input;
+  parseInput = input: input
     |> lib.splitString "\n\n"
     |> map (lib.splitString "\n")
     |> map (filter (e: e != ""))
@@ -73,6 +74,7 @@ with builtins; with (import ../lib.nix); let
 
   # mashines = [Mashine...] -> number
   part1 = mashines: mashines
+    |> parseInput
     |> map cheapestWin
     |> filter (e: e != null)
     |> sum;
@@ -86,9 +88,12 @@ with builtins; with (import ../lib.nix); let
       };}) mashines;
 
   # mashines = [Mashine...] -> number
-  part2 = mashines: mashines
+  part2 = mashines: machines
+    |> parseInput
     |> convertInputToPart2
-    |> part1;
+    |> map cheapestWin
+    |> filter (e: e != null)
+    |> sum;
 
 
   # mashine = Mashine -> number | null
@@ -113,5 +118,29 @@ with builtins; with (import ../lib.nix); let
     winCost mashine a b
     ;
 
-in { inherit part1 part2; }
+  tests = {
+    part1 = [{
+      input = ''
+        Button A: X+94, Y+34
+        Button B: X+22, Y+67
+        Prize: X=8400, Y=5400
+
+        Button A: X+26, Y+66
+        Button B: X+67, Y+21
+        Prize: X=12748, Y=12176
+
+        Button A: X+17, Y+86
+        Button B: X+84, Y+37
+        Prize: X=7870, Y=6450
+
+        Button A: X+69, Y+23
+        Button B: X+27, Y+71
+        Prize: X=18641, Y=10279
+      '';
+      expected = 480;
+    }];
+    part2 = [];
+  };
+
+in { inherit part1 part2 tests; }
 

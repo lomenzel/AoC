@@ -53,7 +53,8 @@ with builtins; let
        (tryEval (f test.input)).success && f test.input == test.expected
     )
     |> filter (e: e)
-    |> (e: if length e == length tests then "✅" else "🟥" )
+    |> (e: if tests == [] then "❓" else if length e == length tests then "✅" else "🟥" )
+
 
   ;
 
