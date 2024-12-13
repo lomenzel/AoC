@@ -113,7 +113,7 @@ with builtins; let
     |> part1;
 
 
-  # mashine = Mashine -> [number number]
+  # mashine = Mashine -> number | null
   cheapestWin = mashine:
   let 
     x1 = mashine.A.x;
