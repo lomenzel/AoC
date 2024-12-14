@@ -64,12 +64,7 @@ with builtins; with (import ../lib.nix); let
       y = pos.y * n;
     };
 
-  # l = [number number] -> {x = number; y = number;}
-  vecToCoord =  l:
-    {
-      x = head l;
-      y = elemAt l 1;
-    };
+
 
 
   # mashines = [Mashine...] -> number

@@ -19,4 +19,11 @@ with builtins; rec {
   even = n: lib.mod n 2 == 0;
   repeat = e: n: if n == 0 then [ ] else [ e ] ++ repeat e (n - 1);
   odd = n: ! even n;
+
+    # l = [number number] -> {x = number; y = number;}
+  vecToCoord =  l:
+    {
+      x = head l;
+      y = elemAt l 1;
+    };
 }
