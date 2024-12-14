@@ -50,19 +50,6 @@ with builtins; with (import ../lib.nix); let
       (a * 3) + b;
 
 
-  # pos1 = Position; pos2 = Position; -> Position
-  addPos = pos1: pos2:
-    { 
-      x = pos1.x + pos2.x;
-      y = pos1.y + pos2.y;
-    };
-
-  # pos = Position; n = number; -> Position
-  mulPos = pos: n:
-    {
-      x = pos.x * n;
-      y = pos.y * n;
-    };
 
 
 

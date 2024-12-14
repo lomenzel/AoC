@@ -198,6 +198,7 @@ with builtins; let
     |> (e: e.cost)
     ;
 
+
   part2 = allCoords
     |> foldl' (acc: curr:
       let

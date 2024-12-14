@@ -19,5 +19,6 @@ Hier gibt es meine Lösungen zu Advent of Code :)
 |11|🔜|🔜|
 |12|🔜|🔜|
 |13|✅|❓|
+|14|✅|❓|
 
 
