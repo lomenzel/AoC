@@ -30,11 +30,53 @@ with builtins; rec {
 
   modPositive = base: int: lib.mod base int |> (e: e + int) |> (e:  lib.mod e  int);
 
-  printMap = m: m
-    |> trace (repeat "-" (length (head m)) |> concat)
-    |> map (e: trace (concat e) e)
-    |> map (e: e)
-    ;
+  grid = rec {
+    fromString = s: s
+      |> lib.splitString "\n"
+      |> filter (e: e != "")
+      |> map (lib.splitString "")
+      |> map (filter (e: e != ""))
+      |> filter (e: e != [])
+      |> init;
+
+    init = g: rec {
+        state = g;
+        width = state |> head |> length;
+        height = state |> length;
+        get = pos:
+          elemAt (elemAt state pos.y) pos.x;
+        find = char:
+          let
+            l = flat state;
+            i = lib.lists.findFirstIndex (e: e == char) (-1) l;
+          in
+            vecToCoord [
+              (lib.mod i width)
+              (div i width)
+            ];
+        set = value: pos: 
+          let
+              visit = position: value:
+                (lib.take position.y state) ++ [(visitRow (elemAt state position.y) position.x value)] ++ (lib.drop (position.y + 1) state);
+
+              visitRow = row: x: value:
+                (lib.take x row) ++ [value] ++ (lib.drop (x + 1) row);
+          in
+          init (visit pos value);
+        wrap = char:
+          let 
+            blank = repeat char (m |> head |> length |> (e: e + 2));
+          in init ([blank] ++ (map (e: [char] ++ e ++ [char]) m) ++ [blank]);
+
+        print = s: state
+          |> trace s
+          |> map (e: trace (concat e) e)
+          |> map (e: e)
+          |> init;
+        allCoords = lib.cartesianProductOfSets {x = lib.range 0 (state |> head |> length |> (e: e - 1)); y =  lib.range 0 (length state |> (e: e - 1));};
+
+      };
+  };
 
 
     # pos1 = Position; pos2 = Position; -> Position
