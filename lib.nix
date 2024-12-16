@@ -64,15 +64,17 @@ with builtins; rec {
         self = { inherit cost state parent expand self pathCost; };
         expand = state.next
           |> map (e: stateToNode self e.cost e.state);
-        pathCost = trace "pathcost ${toString (if parent == null then cost else cost + parent.pathCost)}" (if parent == null then cost else cost + parent.pathCost);
+        pathCost = if parent == null then cost else cost + parent.pathCost;
       };
       aStar' = reached: border:
         let
-          node = head ( trace "bordersize: ${toString (length border)}" border);
+          node =
+            trace "bordersize: ${toString (length border)}; pathCost: ${toString (head border).pathCost}; heuristik ${toString (head border).state.heuristik}; reached ${toString (length reached)}"
+           (head border);
         in
           if border == [] then null else
           if node.state.reached then node else
-          (tail border) ++ (node.expand |> filter (e: (lib.lists.findFirst (f: f.equals e.state) null reached )  == null )) |> sortBorder |> aStar' (reached ++ [node.state]);
+          (tail border) ++ (node.expand |> filter (e: (lib.lists.findFirst (f: f.equals e.state) null reached )  == null )) |> sortBorder |> aStar' ([node.state] ++ reached);
     in
       aStar' [] [(stateToNode null 0 start)];
 
