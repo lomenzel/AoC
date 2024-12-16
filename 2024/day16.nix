@@ -89,6 +89,7 @@ with builtins; with (import ../lib.nix); let
       next = calcNext self;
       heuristik = manhattanDistance position goal;
       equals = othermaze: position == othermaze.position && direction == othermaze.direction;
+      toString = "${builtins.toString position.x}x${builtins.toString position.y}x${builtins.toString direction.x}x${builtins.toString direction.y}";
     };
   Maze = initialState:
   let 

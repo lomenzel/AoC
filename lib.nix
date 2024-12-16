@@ -69,14 +69,14 @@ with builtins; rec {
       aStar' = reached: border:
         let
           node =
-            trace "bordersize: ${toString (length border)}; pathCost: ${toString (head border).pathCost}; heuristik ${toString (head border).state.heuristik}; reached ${toString (length reached)}"
+            trace "bordersize: ${toString (length border)}; pathCost: ${toString (head border).pathCost}; heuristik ${toString (head border).state.heuristik}" #; reached ${toString (length reached)}"
            (head border);
         in
           if border == [] then null else
           if node.state.reached then node else
-          (tail border) ++ (node.expand |> filter (e: (lib.lists.findFirst (f: f.equals e.state) null reached )  == null )) |> sortBorder |> aStar' ([node.state] ++ reached);
+          (tail border) ++ (node.expand |> filter (e: ! hasAttr e.state.toString reached)) |> sortBorder |> aStar' (reached // { "${node.state.toString}" = true; });
     in
-      aStar' [] [(stateToNode null 0 start)];
+      aStar' {} [(stateToNode null 0 start)];
 
   grid = rec {
     fromString = s: s
