@@ -43,7 +43,7 @@ with builtins; rec {
   #       cost: the cost it takes to follow that edge
   #       state: a state, similar to start (yes that also should have next, equals etc...)
   #     reached: a boolean if the state should be accepted as a result
-  #     equals: a function of state -> boolean. if the state given as parameter equals this state
+  #     toString: a minimal string representation used to keep track of what nodes are already expanded 
   # Returns: A SearchTree Node with the following structure
   # {
   #   state: the state of the Search Graph A* has found
@@ -69,7 +69,7 @@ with builtins; rec {
       aStar' = reached: border:
         let
           node =
-            trace "bordersize: ${toString (length border)}; pathCost: ${toString (head border).pathCost}; heuristik ${toString (head border).state.heuristik}" #; reached ${toString (length reached)}"
+           # trace "bordersize: ${toString (length border)}; pathCost: ${toString (head border).pathCost}; heuristik ${toString (head border).state.heuristik}"
            (head border);
         in
           if border == [] then null else
