@@ -1,5 +1,5 @@
 with builtins; with (import ../lib.nix); let
-  realinput = readFile ./day17.input;
+  realinput = readFile ./day17.input; # part 2 = 202972175280682
 
   parseinput = input: input
     |> lib.splitString "\n\n"
@@ -85,7 +85,7 @@ with builtins; with (import ../lib.nix); let
     in (VM i.memory i.program 0 []).compute.output |> map toString |> join ",";
 
 
-  copyA = vm: vm.program == vm.compute.output;
+  copyA = vm: vm.program == trace "${toString vm.compute.output}" vm.compute.output;
 
   repair = memory: program: a: VM (memory // { A = a;}) program 0 [];
 
@@ -98,12 +98,36 @@ with builtins; with (import ../lib.nix); let
   findaRec  = i: n: let s = findA i (trace "tested: ${toString n}" n) (n + fstep - 1); in
   if s != null then  s else findaRec i (n + fstep);
 
+
+  upperBound  = i: n:
+    let 
+      s = (repair i.memory i.program n).compute.output;
+    in
+    if n > 202972175280711 then n else
+    #if n > 202413590112921 && n < 202953971895281 then upperBound i (202953971895281) else
+    if trace "s =${toString s}; n = ${toString n}\n gesucht  ${toString reali.program}" (length s) <= length i.program then upperBound i (n + 1) else
+    n 
+  ;
+  
+  lowerBound  = i: n:
+    if length (repair i.memory i.program n).compute.output < (length i.program) - 1 then lowerBound i (n * 2) else
+    n
+  ;
+
   part2 = input: let
       i = parseinput input; 
     in
-      findaRec i 0;
+    #[
+        (upperBound i 202972175280631)
+        #(lowerBound i 1)
+   # ]
+      ;
 
   testi = parseinput testinput2;
+  reali = parseinput realinput;
+
+  
 
 in
 part2 realinput
+#map (n: (repair reali.memory reali.program n).compute.output) (lib.range 0 80000) |> map length |> groupBy toString |> lib.attrsToList |> map (e: e.value) |> map length
