@@ -41,7 +41,7 @@ with builtins; rec {
   #     heuristik: a Number representing the heuristik used by A*
   #     next: a list of AttributeSets containing 
   #       cost: the cost it takes to follow that edge
-  #       state: a state, similar to start (yes that also should have next, equals etc...)
+  #       state: a state, similar to start (yes that also should have next, reached etc...)
   #     reached: a boolean if the state should be accepted as a result
   #     toString: a minimal string representation used to keep track of what nodes are already expanded 
   # Returns: A SearchTree Node with the following structure
