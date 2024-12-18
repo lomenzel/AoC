@@ -83,7 +83,7 @@ with builtins; with (import ../lib.nix); let
           state = Maze' maze.original forward maze.direction;
         }] else []);
     in
-      #if length possibleEdges == 1 then
+      #if length possibleEdges == 1 && ! (head possibleEdges).state.reached then
       # (head possibleEdges).state.next |> map (e: e // { cost = e.cost + (head possibleEdges).cost;}) else
       possibleEdges
         ;
@@ -93,7 +93,7 @@ with builtins; with (import ../lib.nix); let
       goal = original.find "E";
       reached = position == goal;
       next = calcNext self;
-      heuristik = manhattanDistance position goal;
+      heuristik = (manhattanDistance position goal) + ( if position.x != goal.x && position.y != goal.y  then 1000 else 0);
         #0;
       #equals = othermaze: position == othermaze.position && direction == othermaze.direction;
       toString = "${builtins.toString position.x}x${builtins.toString position.y}x${builtins.toString direction.x}x${builtins.toString direction.y}";
@@ -223,4 +223,4 @@ with builtins; with (import ../lib.nix); let
 
 in
   #{ inherit part1 part2 tests; }
-part2 realinput
+part1 testinput2

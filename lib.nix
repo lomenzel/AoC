@@ -63,22 +63,31 @@ with builtins; rec {
         cost = c;
         self = { inherit cost state parent expand self pathCost; };
         expand = state.next
-          |> map (e: stateToNode self e.cost e.state);
+          |> map (e: stateToNode self e.cost e.state)
+          |> (e: if length e == 1 && ! (head e).state.reached then
+              (head e).expand
+            else e) 
+            ;
         pathCost = if parent == null then cost else cost + parent.pathCost;
       };
       aStar' = reached: border:
         let
           node =
-           # trace "bordersize: ${toString (length border)}; pathCost: ${toString (head border).pathCost}; heuristik ${toString (head border).state.heuristik}"
+           #trace "bordersize: ${toString (length border)}; pathCost: ${toString (head border).pathCost}; heuristik ${toString (head border).state.heuristik}"
            (head border);
         in
           if border == [] then null else
           if node.state.reached then node else
-          (tail border) ++ (node.expand |> filter (e: ! hasAttr e.state.toString reached)) |> sortBorder |> aStar' (reached // { "${node.state.toString}" = true; });
+          if hasAttr node.state.toString reached && node.pathCost >= reached.${node.state.toString} then aStar' reached (tail border) else
+          (node.expand |> filter (e: ! hasAttr e.state.toString reached)) ++ (tail border) |> sortBorder |> aStar' (reached // { "${node.state.toString}" = node.pathCost; });
     in
       aStar' {} [(stateToNode null 0 start)];
 
   grid = rec {
+
+    empty = char: dimensions: repeat (repeat char dimensions.x) dimensions.y |> init;
+
+
     fromString = s: s
       |> lib.splitString "\n"
       |> filter (e: e != "")
@@ -111,6 +120,20 @@ with builtins; rec {
                 (lib.take x row) ++ [value] ++ (lib.drop (x + 1) row);
           in
           init (visit pos value);
+
+
+        adjacent = pos:  
+          map (f:
+            {
+              x = pos.x + f.x;
+              y = pos.y + f.y;
+            }
+            ) directionDeltas
+          |> filter isInside;
+
+        isInside = pos: 
+            pos.x < width && pos.x >= 0 && pos.y < height  && pos.y >= 0;
+
         wrap = char:
           let 
             blank = repeat char (m |> head |> length |> (e: e + 2));
@@ -125,6 +148,25 @@ with builtins; rec {
 
       };
   };
+
+  directionDeltas = [
+    {
+      x = 0;
+      y = (-1);
+    }
+    {
+      x = 1;
+      y = 0;
+    }
+    {
+      x = 0;
+      y = 1;
+    }
+    {
+      x = (-1);
+      y = 0;
+    }
+  ];
 
 
     # pos1 = Position; pos2 = Position; -> Position

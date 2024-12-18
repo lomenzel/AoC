@@ -89,5 +89,5 @@ with builtins; with (import ../lib.nix); let
   
 
 in
-part1 realinput
+part1 testinput
 #map (n: (repair reali.memory reali.program n).compute.output) (lib.range 0 80000) |> map length |> groupBy toString |> lib.attrsToList |> map (e: e.value) |> map length
