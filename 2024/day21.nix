@@ -108,33 +108,100 @@ with builtins; with (import ../lib.nix); let
         || keyboard.output != lib.take (length keyboard.output) goal
         then [] else attrNames keyboard.actions)
       |> map (action: searchNode goal keyboard.actions.${action}) 
-      |> map (s: {cost =  1; state = trace "next: ${s.toString}" s;});
+      |> map (s: {cost =  1; state = s;});
     reached = keyboard.output == goal;
     toString = keyboard.toString;
   };
 
-  complexity = chainedRobots: pin:
-    (aStar (searchNode (lib.splitString "" pin |> filter (e: e != "")) (wrapKeyboardN (Keyboard numpad) chainedRobots))).pathCost
-    * lib.toIntBase10 (concat (lib.splitString "" pin |> filter (e: e != "A"))) ;
-
-
   part1 = input: pins input |> map (complexity 2) |> sum;
   part2 = input: pins input |> map (complexity 25) |> sum;
 
-
-
-
-in
- testinput  
- |> pins
- |> map (lib.splitString "")
- |> map (filter (e: e != ""))
- |> map (e:
+  pairs = pin: pin
+    |> lib.splitString ""
+    |> filter (e: e != "")
+    |> (e:
     lib.range 0 (length e - 1)
       |> map (f:
         if f == 0 then
           ["A" (elemAt e f)]
         else [ (elemAt e (f - 1)) (elemAt e f) ]
       )
-  )
+    );
+
+
+  groupPairs = pairs: pairs
+    |> groupBy concat
+    |> lib.attrsToList
+    |> map (e: {pair = head e.value; count = length e.value;});
+
+
+  navigate = pad: pair: pair
+    |> map pad.find
+    |> (e:
+    let 
+      pos1 = head e;
+      pos2 = elemAt e 1;
+      x1 = pos1.x;
+      x2 = pos2.x;
+      y1 = pos1.y;
+      y2 = pos2.y;
+      y = y2 - y1;
+      x = x2 - x1;
+    in
+      "${
+        concat (repeat (if x < 0 then "<" else ">") (abs x))
+      }${
+        concat (repeat (if y < 0 then "^" else "v") (abs y))
+        
+      }A"
+    );
+
+
+  step = pad: pins: pins
+   |> map (sequence: {count = sequence.count; pins = (sequence.pin |> pairs
+    |> groupPairs
+    |> map (p: {count = p.count; pin = navigate pad p.pair ;}));})
+  |> map flatPins
   |> flat
+  |> groupPairGroups
+  ;
+
+  flatPins = pins: pins.pins
+    |> map (e: e // { count = e.count * pins.count; })
+    ;
+
+  groupPairGroups = pg: pg
+    |> groupBy (e: e.pin)
+    |> lib.attrsToList
+    |> map (e:  (head e.value) // { count =  (e.value |> map (f: f.count) |> sum);});
+
+  stepN = n: pad: pins: 
+    if n == 0  then pins
+    else stepN (n - 1) pad (step pad pins);
+
+  complexityFast = chainedRobots: pin: pin
+    |> (e: step numpad [{count = 1; pin = e;}])
+    |> stepN chainedRobots dirpad
+    |> map (e: e.count * stringLength e.pin )
+    |> sum
+   # |> (e: e * lib.toIntBase10 (concat (lib.splitString "" pin |> filter (e: e != "A"))) )
+    ;
+
+    complexity = chainedRobots: pin:
+    (aStar (searchNode (lib.splitString "" pin |> filter (e: e != "")) (wrapKeyboardN (Keyboard numpad) chainedRobots))).pathCost
+    #* lib.toIntBase10 (concat (lib.splitString "" pin |> filter (e: e != "A")))
+     ;
+
+  # 198082772062090 is too high for part 2
+
+  testinput2 = ''
+  7A
+  '';
+
+  # [ { count = 1; pin = "<<^^^A"; } { count = 1; pin = ">>vvvA"; } ]
+  #[ { count = 1; pin = "<A"; } { count = 1; pin = ">^A"; } { count = 3; pin = "A"; } { count = 1; pin = "vA"; } ]
+
+in
+stepN 25 dirpad [{count = 1; pin = ">A";}]
+
+

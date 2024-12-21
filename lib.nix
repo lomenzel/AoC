@@ -105,7 +105,7 @@ with builtins; rec {
         find = char:
           let
             l = flat state;
-            i = lib.lists.findFirstIndex (e: e == char) (-1) l;
+            i = lib.lists.findFirstIndex (e: e == char) (abort "not found") l;
           in
             vecToCoord [
               (lib.mod i width)
