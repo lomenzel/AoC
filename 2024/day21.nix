@@ -113,9 +113,6 @@ with builtins; with (import ../lib.nix); let
     toString = keyboard.toString;
   };
 
-  part1 = input: pins input |> map (complexity 2) |> sum;
-  part2 = input: pins input |> map (complexity 25) |> sum;
-
   pairs = pin: pin
     |> lib.splitString ""
     |> filter (e: e != "")
@@ -149,10 +146,13 @@ with builtins; with (import ../lib.nix); let
       x = x2 - x1;
     in
       "${
-        concat (repeat (if x < 0 then "<" else ">") (abs x))
-      }${
+        # FUUUUUCK it makes a difference in which order i do that stuff :(
+
         concat (repeat (if y < 0 then "^" else "v") (abs y))
-        
+
+      }${
+        concat (repeat (if x < 0 then "<" else ">") (abs x))
+
       }A"
     );
 
@@ -184,24 +184,27 @@ with builtins; with (import ../lib.nix); let
     |> stepN chainedRobots dirpad
     |> map (e: e.count * stringLength e.pin )
     |> sum
-   # |> (e: e * lib.toIntBase10 (concat (lib.splitString "" pin |> filter (e: e != "A"))) )
+    |> (e: e * lib.toIntBase10 (concat (lib.splitString "" pin |> filter (e: e != "A"))) )
     ;
 
     complexity = chainedRobots: pin:
     (aStar (searchNode (lib.splitString "" pin |> filter (e: e != "")) (wrapKeyboardN (Keyboard numpad) chainedRobots))).pathCost
-    #* lib.toIntBase10 (concat (lib.splitString "" pin |> filter (e: e != "A")))
+    * lib.toIntBase10 (concat (lib.splitString "" pin |> filter (e: e != "A")))
      ;
 
   # 198082772062090 is too high for part 2
+  # 136902064596922 is too low
 
   testinput2 = ''
   7A
   '';
 
-  # [ { count = 1; pin = "<<^^^A"; } { count = 1; pin = ">>vvvA"; } ]
-  #[ { count = 1; pin = "<A"; } { count = 1; pin = ">^A"; } { count = 3; pin = "A"; } { count = 1; pin = "vA"; } ]
+
+  part1 = input: pins input |> map (complexity 3) |> sum;
+  part2 = input: pins input |> map (complexityFast 25) |> sum;
+
 
 in
-stepN 25 dirpad [{count = 1; pin = ">A";}]
+part2 realinput
 
 
