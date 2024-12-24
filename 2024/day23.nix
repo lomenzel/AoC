@@ -63,7 +63,8 @@ with builtins; with (import ../lib.nix); let
   withNext = connections: l:
     connectedToAll connections l
       |> map (e: l ++ [e] |> lib.lists.naturalSort)
-      |> lib.lists.unique
+      |> lib.unique
+      #|> (e: trace "withNext ${toString (length e)}" e)
       #|> sort (a: b: a < b)
       ;
 
@@ -76,15 +77,21 @@ with builtins; with (import ../lib.nix); let
      |> join ","
      ;
 
+  unique = l: 
+    foldl' (acc: curr: acc // { "${join "," curr}" = true; }) {} (trace "unique ${toString (length l)}" l)
+    |> attrNames
+    |>  map (e: lib.splitString "," e |> filter (f: f!= ""))
+    ;
+
   findLargestNet = connections: l:
     let 
       nextNet = map (withNext connections) (trace "length ${(toString (length l))} head ${toString (head l)}" l) |> flat;
     in
       if nextNet == [] then l else
         nextNet
-        |> lib.unique
+        |> unique
         |> findLargestNet connections
-        |> lib.unique
+        |> unique
         ;
   
   part1 = input: 
