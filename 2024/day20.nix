@@ -118,18 +118,20 @@ with builtins; with (import ../lib.nix); let
   allCoordsWithMaxDistance = pos: n:
     lib.cartesianProductOfSets {x = lib.range (-n) (n); y = lib.range (-n)  n;}
     |> map (e: addPos pos e)
-    |> filter (e: manhattanDistance e pos <= n);
+    |> filter (e: manhattanDistance e pos <= n)
+    |> lib.unique;
 
   helpfulCheatsN = g: n:
     let 
-      cache = generateCache g;
+      cache' = generateCache g;
+      cache = trace "cache Generated ${lib.attrsToList cache' |> length |> toString}" cache';
     in
       cache
       |> lib.attrsToList
       |> map (e: e.name)
       |> map (e: map (cheat:
-          if ! hasAttr cheat cache then false else
-          if cache.${cheat} < (cache.${e} - 77) then true else false
+          hasAttr cheat cache &&
+          cache.${cheat} <= (cache.${e} - 100 - (manhattanDistance (idToPos cheat) (idToPos e)))
         ) ([e] |> map (f: allCoordsWithMaxDistance (idToPos f) n) |> flat |> map posToId) |> map (f: if f then 1 else 0) |> sum)
       |> sum
       ;
@@ -143,8 +145,7 @@ with builtins; with (import ../lib.nix); let
 
     part2 = input:
       helpfulCheatsN (parseInput input) 20;
-      #3756505 was too high
 
 
 in
-  part2 testinput 
+  part2 realinput 

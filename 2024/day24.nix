@@ -65,19 +65,14 @@ with builtins; with (import ../lib.nix); let
         wireNumber = z: z |> lib.splitString "z" |> tail |> concat |> lib.toIntBase10;
         solvableGates = filter solvable gates;
         nextWires = foldl' (acc: curr: acc // { "${curr.output.wire}" = curr.output.value wires.${ head curr.inputs} wires.${elemAt curr.inputs 1}; }) wires solvableGates;
-        nextGates = lib.subtractLists solvableGates gates;
-
-      in rec {
-        inherit wires gates;
-      
-        output = if ! hasOutput then next.output else
-          map (wire: (pow 2 (wireNumber wire)) * (if wires.${wire} then 1 else 0)) allOutputWires
-          |> sum
-          ;
+        nextGates = lib.subtractLists solvableGates gates;  
         next = MonitoringDevice {wires = nextWires; gates = nextGates;};
 
-        self = { inherit wires gates self next; };
-      };
+      in 
+      if ! hasOutput then next else
+        map (wire: (pow 2 (wireNumber wire)) * (if wires.${wire} then 1 else 0)) allOutputWires
+          |> sum
+        ;
 
 in 
-  (MonitoringDevice (parseInput realinput)).output
+  (MonitoringDevice (parseInput realinput))

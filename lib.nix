@@ -19,6 +19,7 @@ with builtins; rec {
   even = n: lib.mod n 2 == 0;
   repeat = e: n: if n == 0 then [ ] else [ e ] ++ repeat e (n - 1);
   odd = n: ! even n;
+  count = e: l: map (f: if  f == e  then 1 else 0) l |> sum;
 
     # l = [number number] -> {x = number; y = number;}
   vecToCoord =  l:
@@ -120,6 +121,12 @@ with builtins; rec {
                 (lib.take x row) ++ [value] ++ (lib.drop (x + 1) row);
           in
           init (visit pos value);
+
+        transpose = init (lib.range 0 (width - 1) |>
+          map (x: lib.range 0 (height - 1)
+            |> map (y: get {inherit x y ;} )
+          )
+        );
 
 
         adjacent = pos:  
