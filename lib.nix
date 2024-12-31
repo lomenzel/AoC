@@ -128,6 +128,18 @@ with builtins; rec {
           )
         );
 
+        rotate = init (lib.range 0 (width - 1)
+          |> map (row: lib.range 0 (height -1)
+            |> map (col:
+              get {
+                x = (width - 1 - row);
+                y = col;
+              }
+            ))
+        );
+
+        countChar = c: map (count c) state |> sum;
+
 
         adjacent = pos:  
           map (f:
@@ -146,11 +158,7 @@ with builtins; rec {
             blank = repeat char (m |> head |> length |> (e: e + 2));
           in init ([blank] ++ (map (e: [char] ++ e ++ [char]) m) ++ [blank]);
 
-        print = s: state
-          |> trace s
-          |> map (e: trace (concat e) e)
-          |> map (e: e)
-          |> init;
+        print = trace "Grid:\n ${join "\n " (map concat state)}" (init state);
         allCoords = lib.cartesianProductOfSets {x = lib.range 0 (state |> head |> length |> (e: e - 1)); y =  lib.range 0 (length state |> (e: e - 1));};
 
       };

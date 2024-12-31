@@ -1,8 +1,9 @@
-with builtins; let 
-  lib = (import <nixos> {}).lib;
-  input = readFile ./day2.input
+with builtins; with (import ../lib.nix); let
+  realinput = readFile ./day2.input;
+  parseInput = input: input
     |> lib.splitString "\n"
-    |> map (e: lib.splitString " " e |> map (e: lib.toInt e));
+    |> map (e: lib.splitString " " e |> filter (e: e!= "") |>  map (e: lib.toInt e))
+    |> filter (e: e != []);
   sum = list: lib.fold (acc: curr: acc + curr) 0 list;
   ascending = list: 
     if length list < 2 then true else
@@ -46,14 +47,36 @@ with builtins; let
 
 
 
-  "Part 1" = input
+  part1 = input: input
+    |> parseInput
     |> filter save
     |> length
     ;
 
-  "Part 2" = input
+  part2 = input: input
+    |> parseInput
     |> filter tolerable
     |> length
     ;
+
+  tests =
+  let testinput = ''
+          7 6 4 2 1
+          1 2 7 8 9
+          9 7 6 2 1
+          1 3 2 4 5
+          8 6 4 4 1
+          1 3 6 7 9
+        '';
+  in {
+    part1 = [{
+        input = testinput;
+        expected = 2;
+      }];
+      part2 = [{
+        input = testinput;
+        expected = 4;
+      }];
+  };
 in 
-  {inherit "Part 1" "Part 2";}
+  {inherit part1 part2 tests;}

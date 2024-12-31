@@ -74,5 +74,7 @@ with builtins; with (import ../lib.nix); let
           |> sum
         ;
 
+    part2 = input: input |> parseInput |> MonitoringDevice;
+
 in 
-  (MonitoringDevice (parseInput realinput))
+  {inherit part1; }

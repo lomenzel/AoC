@@ -1,7 +1,7 @@
 with builtins; let
   lib = (import <nixos> { }).lib;
-  input = readFile ./day4.input
-    |> lib.splitString "\n";
+  realinput = readFile ./day4.input;
+   
 
   sum = list: lib.fold (acc: curr: acc + curr) 0 list;
   product = list: lib.fold (acc: curr: acc * curr) 1 list;
@@ -114,16 +114,47 @@ with builtins; let
   downRight = m: coords:
     elemAt (elemAt m (coords.row + 1)) (coords.col + 1);
   
-  "Part 1" =  allDirections input
+  part2 = input : input
+   |> lib.splitString "\n"
+   |> filter (e: e != "")
+   |>  allDirections 
     ;
-  "Part 2" = input
+  part1 = input: input 
+    |> lib.splitString "\n"
+    |> filter (e: e != "")
     |> (e: [(length e) (head e |> lib.stringLength)])
     |> map (e: e - 2)
     |> map (lib.range 1)
     |> (e: {row = head e; col = elemAt e 1;})
     |> lib.cartesianProductOfSets
-    |> filter (isXMAS (map (lib.stringToCharacters) input))
+    |> filter (isXMAS (map (lib.stringToCharacters) (input |> lib.splitString "\n"
+      |> filter (e: e != ""))))
     |> length
     ;
+  
+  exampleInput = ''
+    MMMSXXMASM
+    MSAMXMSMSA
+    AMXSXMAAMM
+    MSAMASMSMX
+    XMASAMXAMM
+    XXAMMXXAMA
+    SMSMSASXSS
+    SAXAMASAAA
+    MAMMMXMMMM
+    MXMXAXMASX
+  '';
+
+  tests = {
+    part1 = [{
+      input = exampleInput;
+      expected = 18;
+    }];
+    part2 =[{
+      input = exampleInput;
+      expected = 9;
+    }];
+
+  };
 in
-{ inherit "Part 1" "Part 2"; }
+  {inherit part1 part2 tests;}

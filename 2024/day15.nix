@@ -89,7 +89,7 @@ with builtins; with (import ../lib.nix); let
      rec {
         state = if isString initialState then grid.fromString initialState else initialState;
         robot = state.find "@";
-        print = s: Warehouse (state.print "Warehouse: ${s}");
+        print = Warehouse state.print;
         gps = foldl' (acc: curr: 
           if state.get curr == "O" || state.get curr == "[" then acc + (100 * curr.y + curr.x) else acc) 0 state.allCoords;
         moveRobot = direction:
@@ -219,7 +219,7 @@ with builtins; with (import ../lib.nix); let
 
 
   simulate = input: with input;
-    ((foldl' (wh: wh.moveRobot) warehouse moves).print "Finish ").gps;
+    (foldl' (wh: wh.moveRobot) warehouse moves).gps;
 
   part1 = input: simulate (parseInput input);
   part2 = input: simulate (parseInputForPart2 input);
@@ -244,6 +244,4 @@ with builtins; with (import ../lib.nix); let
   };
 
 in
- # { inherit part1 part2 tests; }
-
-part2 realinput
+ { inherit part1 part2 tests; }

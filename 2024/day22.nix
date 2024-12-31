@@ -37,4 +37,4 @@ with builtins; with (import ../lib.nix); let
 
 in
 
-nextN 100 1
+ {inherit part1;}

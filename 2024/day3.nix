@@ -11,14 +11,14 @@ with builtins; let
     if ! isNull(elemAt list 4) then "f" else
     head list;
 
-  "Part 1" = input
+  part1 = input: input
     |> split ''mul\(([0-9]+),([0-9]+)\)''
     |> filter (e: !isString e)
     |> map (e: map (lib.toInt) e |> product)
     |> sum
     ;
 
-  "Part 2" = input
+  part2 =input: input
     |> split ''(mul\(([0-9]+),([0-9]+)\))|(do\(\))|(don't\(\))''
     |> filter (e: !isString e)
     |> map (prettify)
@@ -34,5 +34,17 @@ with builtins; let
     |> map (e: map (lib.toInt) e |> product)
     |> sum
     ;
+
 in 
-  {inherit "Part 1" "Part 2";}
+  {inherit  part1 part2;
+    tests = {
+      part1 = [{
+        input = "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))";
+        expected = 161;
+      }];
+      part2 = [{
+        input = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))";
+        expected = 48;
+      }];
+    };
+  }

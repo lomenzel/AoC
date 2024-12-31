@@ -116,4 +116,4 @@ with builtins; with (import ../lib.nix); let
 
 
 in
-  part2 realinput
+ {inherit part1 part2;}

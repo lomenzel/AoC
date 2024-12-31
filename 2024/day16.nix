@@ -222,5 +222,4 @@ with builtins; with (import ../lib.nix); let
 
 
 in
-  #{ inherit part1 part2 tests; }
-part1 testinput2
+  { inherit part1 part2 tests; }
